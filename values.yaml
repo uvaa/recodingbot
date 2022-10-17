@@ -2,8 +2,8 @@ replicaCount: 1
 
 app:
   replica: 3
-  image: nginx #traefik/whoami
-  tag: alpine
+  image: traefik/whoami
+  tag: latest
   env:
     - name: SERVICE_TOKEN
       value: some-service-token-from-BE
@@ -17,10 +17,16 @@ app:
       value: recording
     - name: APPENDER_TYPE
       value: json-console
-  ports:
-    - containerPort: 80
-    - containerPort: 8080
-    - containerPort: 8081
+  deployPorts:
+    - containerPort: 80 # application port
+  servicePorts:
+    - name: port1
+      # public to the nginx
+      # the app.service is a LoadBalancer
+      # so we can use the nginx with ssl to proxy this port
+      port: 8080
+      # the [deployPorts: containerPort] port
+      targetPort: 80
 
 postgres:
   env:
@@ -35,6 +41,6 @@ postgres:
     kubernetes.io/hostname: k3s # node-name
 
 elasticsearch:
-  dataPath: /home/elasticsearch-data
+  dataPath: /home/elasticsearch-data # chmod 777 /home/elasticsearch-data
   nodeSelector:
     kubernetes.io/hostname: k3s # node-name
