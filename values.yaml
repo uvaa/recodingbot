@@ -1,19 +1,24 @@
-global:
-  postgresql:
-    auth:
-      postgresPassword: recording
-      username: recording
-      password: recording
-      database: recording
+# global:
 
 postgresql:
   fullnameOverride: data-postgres
+  auth:
+    postgresPassword: recording
+    username: recording
+    password: recording
+    database: recording
 
 elasticsearch:
   enabled: false
+  fullnameOverride: data-elasticsearch
 
 kibana:
   enabled: false
+  fullnameOverride: app-kibana
+  elasticsearch:
+    port: 9200
+    hosts:
+      - data-elasticsearch
 
 app:
   replica: 3
