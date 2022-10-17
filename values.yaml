@@ -1,16 +1,31 @@
-replicaCount: 1
+global:
+  postgresql:
+    auth:
+      postgresPassword: recording
+      username: recording
+      password: recording
+      database: recording
+
+postgresql:
+  fullnameOverride: data-postgres
+
+elasticsearch:
+  enabled: false
+
+kibana:
+  enabled: false
 
 app:
   replica: 3
-  image: traefik/whoami
-  tag: latest
+  image: nginx
+  tag: alpine
   env:
     - name: SERVICE_TOKEN
       value: some-service-token-from-BE
     - name: PUBLIC_URL
       value: http://www.example.com
     - name: DB_URL
-      value: jdbc:postgresql://postgres-service:5432/recording
+      value: jdbc:postgresql://data-postgres:5432/recording
     - name: DB_USER
       value: recording
     - name: DB_PASSWORD
@@ -27,20 +42,3 @@ app:
       port: 8080
       # the [deployPorts: containerPort] port
       targetPort: 80
-
-postgres:
-  env:
-    - name: POSTGRES_USER
-      value: recording
-    - name: POSTGRES_PASSWORD
-      value: recording
-    - name: POSTGRES_DB
-      value: recording
-  dataPath: /home/postgres-data
-  nodeSelector:
-    kubernetes.io/hostname: k3s # node-name
-
-elasticsearch:
-  dataPath: /home/elasticsearch-data # chmod 777 /home/elasticsearch-data
-  nodeSelector:
-    kubernetes.io/hostname: k3s # node-name
